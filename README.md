@@ -67,7 +67,8 @@ end
 
 user = User.create
 user.destroy
-user.undestroy #=> true
+user.undestroy
+# => true
 ```
 
 ## Authors ##
