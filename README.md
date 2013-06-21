@@ -59,8 +59,7 @@ class User < ActiveRecord::Base
 end
 
 user = User.create
-user.destroy
-user.inspect # => "#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
+user.destroy # => "#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
 ```
 
 ### Undestroying ###
@@ -72,8 +71,7 @@ end
 user = User.create(name: 'John')
 user.destroy
 "#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
-user.undestroy
-user.inspect # => "#<User id: 1, destroyed_at: nil, type: nil>"
+user.undestroy # => "#<User id: 1, destroyed_at: nil, type: nil>"
 ```
 
 ## Authors ##

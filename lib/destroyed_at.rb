@@ -15,8 +15,10 @@ module DestroyedAt
 
   # Set an object's destroyed at time to nil.
   def undestroy
-   self.update_attribute(:destroyed_at, nil)
-   undestroy_associations
+   if state = self.update_attribute(:destroyed_at, nil)
+     undestroy_associations
+   end
+   state
   end
 
   private
