@@ -16,8 +16,7 @@ In your `Gemfile`
 gem 'destroyed_at'
 ```
 
-You can either mixin the modules on a case-by-case basis or make the
-changes global:
+You can either mixin the modules on a case-by-case basis:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -25,7 +24,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-or
+or make the changes global:
 
 ```ruby
 class ActiveRecord::Base
