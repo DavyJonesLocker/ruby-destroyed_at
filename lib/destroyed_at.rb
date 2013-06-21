@@ -17,6 +17,8 @@ module DestroyedAt
    undestroy_associations
   end
 
+  private
+
   def undestroy_associations
     association_cache.select { |key, value| value.options[:dependent] == :destroy }.keys.each do |key|
       assoc = association(key)
