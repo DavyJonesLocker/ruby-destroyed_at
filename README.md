@@ -49,8 +49,8 @@ been destroyed (i.e.,have `nil` for their destroyed_at value). The
 value to `nil`.
 
 To include this functionality on `has_many through` relationships,
-be sure to `include DestroyAt` on the through class, as well as the
-parent class.
+be sure to `include DestroyedAt` on the through model, as well as the
+parent model.
 
 ### Destroying ###
 ```ruby
@@ -60,7 +60,7 @@ end
 
 user = User.create
 user.destroy
-"#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
+user.inspect # => "#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
 ```
 
 ### Undestroying ###
@@ -73,8 +73,7 @@ user = User.create(name: 'John')
 user.destroy
 "#<User id: 1, destroyed_at: \"2013-06-21 17:52:07\", type: nil>"
 user.undestroy
-user.inspect
-"#<User id: 1, destroyed_at: nil, type: nil>"
+user.inspect # => "#<User id: 1, destroyed_at: nil, type: nil>"
 ```
 
 ## Authors ##
