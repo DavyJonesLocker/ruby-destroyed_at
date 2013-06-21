@@ -1,8 +1,6 @@
 require 'test_helper'
 
 describe 'Destroying AR models' do
-  after { User.delete_all }
-
   it 'Calling destroy on a model should only safe destroy record' do
     user = User.create
     user.destroy
@@ -20,7 +18,7 @@ describe 'Destroying AR models' do
   end
 
   it 'can undestroy records' do
-    user = User.create(:destroyed_at => DateTime.now)
+    user = User.create(:destroyed_at => DateTime.current)
     User.all.must_be_empty
     user.reload
     user.undestroy
@@ -34,5 +32,45 @@ describe 'Destroying AR models' do
     person.destroy
     person.before_flag.must_equal true
     person.after_flag.must_equal true
+  end
+
+  it 'will properly destroy relations' do
+    user = User.create(:profile => Profile.new, :car => Car.new)
+    user.reload
+    user.profile.wont_be_nil
+    user.car.wont_be_nil
+    user.destroy
+    Profile.count.must_equal 0
+    Profile.unscoped.count.must_equal 1
+    Car.count.must_equal 0
+    Car.unscoped.count.must_equal 0
+  end
+
+  it 'can undestroy relationships' do
+    user = User.create(:destroyed_at => DateTime.current, :profile => Profile.new(:destroyed_at => DateTime.current))
+    Profile.count.must_equal 0
+    user.undestroy
+    Profile.count.must_equal 1
+  end
+
+  it 'will not undestroy relationships that have no destroy dependency' do
+    user = User.create(:destroyed_at => DateTime.current, :show => Show.new(:destroyed_at => DateTime.current))
+    Show.count.must_equal 0
+    user.undestroy
+    Show.count.must_equal 0
+  end
+
+  it 'will respect has many associations' do
+    user = User.create(:destroyed_at => DateTime.current, :dinners => [Dinner.new(:destroyed_at => DateTime.current)])
+    Dinner.count.must_equal 0
+    user.undestroy
+    Dinner.count.must_equal 1
+  end
+
+  it 'will respect has many through associations' do
+    user = User.create(:destroyed_at => DateTime.current, :fleets => [Fleet.new(:destroyed_at => DateTime.current, :car => Car.new)])
+    user.cars.count.must_equal 0
+    user.undestroy
+    user.cars.count.must_equal 1
   end
 end

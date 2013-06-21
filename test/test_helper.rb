@@ -4,10 +4,19 @@ require 'minitest/autorun'
 require 'active_record'
 require 'byebug'
 require 'timecop'
+require 'database_cleaner'
 
 class Minitest::Spec
   class << self
     alias :context :describe
+  end
+
+  before do
+    DatabaseCleaner.start
+  end
+
+  after do
+    DatabaseCleaner.clean
   end
 end
 
@@ -16,10 +25,23 @@ ActiveRecord::Base.establish_connection(
   :database => ':memory:'
 )
 
+DatabaseCleaner.strategy = :truncation
+
 ActiveRecord::Base.connection.execute(%{CREATE TABLE users (id INTEGER PRIMARY KEY, destroyed_at DATETIME, type STRING);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE profiles (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE cars (id INTEGER PRIMARY KEY, user_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE dinners (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE shows (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE fleets (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER, car_id INTEGER);})
 
 class User < ActiveRecord::Base
   include DestroyedAt
+  has_one :profile, :dependent => :destroy
+  has_one :car, :dependent => :destroy
+  has_many :dinners, :dependent => :destroy
+  has_one :show
+  has_many :fleets
+  has_many :cars, :through => :fleets, :dependent => :destroy
 end
 
 class Person < User
@@ -35,4 +57,28 @@ class Person < User
   def set_after_flag
     self.after_flag = true
   end
+end
+
+class Profile < ActiveRecord::Base
+  include DestroyedAt
+  belongs_to :user
+end
+
+class Car < ActiveRecord::Base
+  belongs_to :user
+  has_many :fleets
+end
+
+class Dinner < ActiveRecord::Base
+  include DestroyedAt
+end
+
+class Show < ActiveRecord::Base
+  include DestroyedAt
+end
+
+class Fleet < ActiveRecord::Base
+  include DestroyedAt
+  belongs_to :user
+  belongs_to :car
 end
