@@ -68,7 +68,7 @@ class User < ActiveRecord::Base
   include DestroyedAt
 end
 
-user = User.create(name: 'John')
+user = User.create
 user.destroy
 user.undestroy #=> true
 ```
