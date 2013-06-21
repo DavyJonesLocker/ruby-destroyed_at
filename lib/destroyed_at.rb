@@ -5,6 +5,7 @@ module DestroyedAt
     klass.instance_eval { default_scope { where(destroyed_at: nil) } }
   end
 
+  # Set an object's destroyed_at time.
   def destroy
     run_callbacks(:destroy) do
       destroy_associations
@@ -12,6 +13,7 @@ module DestroyedAt
     end
   end
 
+  # Set an object's destroyed at time to nil.
   def undestroy
    self.update_attribute(:destroyed_at, nil)
    undestroy_associations

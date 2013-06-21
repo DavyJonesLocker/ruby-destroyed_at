@@ -2,6 +2,7 @@ require 'test_helper'
 
 describe 'Destroying AR models' do
   it 'Calling destroy on a model should only safe destroy record' do
+    byebug
     user = User.create
     user.destroy
     User.all.must_be_empty
