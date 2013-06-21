@@ -4,8 +4,6 @@
 [![Dependency Status](https://gemnasium.com/dockyard/destroyed_at.png?travis)](https://gemnasium.com/dockyard/destroyed_at)
 [![Code Climate](https://codeclimate.com/github/dockyard/destroyed_at.png)](https://codeclimate.com/github/dockyard/destroyed_at)
 
-Context based validations for model instances.
-
 ## Looking for help? ##
 
 If it is a bug [please open an issue on GitHub](https://github.com/dockyard/destroyed_at/issues).
