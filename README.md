@@ -47,7 +47,7 @@ been destroyed (i.e., have `nil` for their destroyed_at value).
 `#destroyed?` will be `true` when your model is destroyed; it will be
 `false` when your model has been undestroyed.
 
-## Undestroying ###
+### Undestroying ####
 When you'd like to "undestroy" a record, call the `undestroy` method on
 the instance. This will set its `destroyed_at` value to `nil`, thereby
 including it in the default scope of the class again.
