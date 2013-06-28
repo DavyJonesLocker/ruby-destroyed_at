@@ -47,6 +47,18 @@ been destroyed (i.e., have `nil` for their destroyed_at value).
 `#destroyed?` will be `true` when your model is destroyed; it will be
 `false` when your model has been undestroyed.
 
+```ruby
+class User < ActiveRecord::Base
+  include DestroyedAt
+end
+
+user = User.create
+user.destroy 
+# => true
+user.destroyed_at
+# => <DateTime>
+```
+
 ### Undestroying ####
 When you'd like to "undestroy" a record, call the `undestroy` method on
 the instance. This will set its `destroyed_at` value to `nil`, thereby
@@ -56,23 +68,6 @@ To include this functionality on `has_many through` relationships,
 be sure to `include DestroyedAt` on the through model, as well as the
 parent model.
 
-#### Callbacks ####
-`before_undestroy` and `after_undestroy` callbacks are added to your
-model. They work similarly to the `before_destroy` and `after_destroy`
-callbacks.
-
-### Destroying ###
-```ruby
-class User < ActiveRecord::Base
-  include DestroyedAt
-end
-
-user = User.create
-user.destroy 
-# => true
-```
-
-### Undestroying ###
 ```ruby
 class User < ActiveRecord::Base
   include DestroyedAt
@@ -82,7 +77,14 @@ user = User.create
 user.destroy
 user.undestroy
 # => true
+user.destroyed_at
+# => nil
 ```
+
+#### Callbacks ####
+`before_undestroy` and `after_undestroy` callbacks are added to your
+model. They work similarly to the `before_destroy` and `after_destroy`
+callbacks.
 
 ## Authors ##
 
