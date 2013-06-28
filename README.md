@@ -42,9 +42,12 @@ associated records.
 ### Destroying ###
 Overides the `destroy` method to set `destroyed_at` on an object. The
 default scope of the class is then set to return objects that have not
-been destroyed (i.e., have `nil` for their destroyed_at value). 
+been destroyed (i.e., have `nil` for their destroyed_at value).
 
-### Un-destroying ###
+`#destroyed?` will be `true` when your model is destroyed; it will be
+`false` when your model has been undestroyed.
+
+## Undestroying ###
 When you'd like to "undestroy" a record, call the `undestroy` method on
 the instance. This will set its `destroyed_at` value to `nil`, thereby
 including it in the default scope of the class again.
@@ -52,6 +55,11 @@ including it in the default scope of the class again.
 To include this functionality on `has_many through` relationships,
 be sure to `include DestroyedAt` on the through model, as well as the
 parent model.
+
+#### Callbacks ####
+`before_undestroy` and `after_undestroy` callbacks are added to your
+model. They work similarly to the `before_destroy` and `after_destroy`
+callbacks.
 
 ### Destroying ###
 ```ruby
