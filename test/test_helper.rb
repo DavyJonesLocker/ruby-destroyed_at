@@ -71,6 +71,7 @@ end
 
 class Dinner < ActiveRecord::Base
   include DestroyedAt
+  belongs_to :user
 end
 
 class Show < ActiveRecord::Base

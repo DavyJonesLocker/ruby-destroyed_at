@@ -47,7 +47,8 @@ describe 'Destroying AR models' do
   end
 
   it 'can undestroy relationships' do
-    user = User.create(:destroyed_at => DateTime.current, :profile => Profile.new(:destroyed_at => DateTime.current))
+    user = User.create(:destroyed_at => DateTime.current)
+    Profile.create(:destroyed_at => DateTime.current, :user => user)
     Profile.count.must_equal 0
     user.undestroy
     Profile.count.must_equal 1
@@ -61,16 +62,31 @@ describe 'Destroying AR models' do
   end
 
   it 'will respect has many associations' do
-    user = User.create(:destroyed_at => DateTime.current, :dinners => [Dinner.new(:destroyed_at => DateTime.current)])
+    user = User.create(:destroyed_at => DateTime.current)
+    Dinner.create(:destroyed_at => DateTime.current, :user => user)
     Dinner.count.must_equal 0
     user.undestroy
     Dinner.count.must_equal 1
   end
 
   it 'will respect has many through associations' do
-    user = User.create(:destroyed_at => DateTime.current, :fleets => [Fleet.new(:destroyed_at => DateTime.current, :car => Car.new)])
+    #user = User.create(:destroyed_at => DateTime.current, :fleets => [Fleet.new(:destroyed_at => DateTime.current, :car => Car.new)])
+    user = User.create(:destroyed_at => DateTime.current)
+    car = Car.create
+    fleet = Fleet.create(:destroyed_at => DateTime.current, :car => car)
+    user.fleets = [fleet]
     user.cars.count.must_equal 0
     user.undestroy
     user.cars.count.must_equal 1
+  end
+
+  it 'properly sets #destroyed?' do
+    user = User.create
+    user.destroy
+    user.destroyed?.must_equal true
+    user = User.unscoped.last
+    user.destroyed?.must_equal true
+    user.undestroy
+    user.destroyed?.must_equal false
   end
 end

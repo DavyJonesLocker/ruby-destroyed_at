@@ -10,7 +10,7 @@ If it is a bug [please open an issue on GitHub](https://github.com/dockyard/dest
 
 ## Installation ##
 
-In your `Gemfile`
+Add the `destroyed_at` gem to your `Gemfile`
 
 ```ruby
 gem 'destroyed_at'
@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-or make the changes global:
+or make the changes globally:
 
 ```ruby
 class ActiveRecord::Base
@@ -36,14 +36,18 @@ Each model's table that is expected to have this behavior **must** have
 a `destroyed_at` column of type `DateTime`.
 
 ## Usage ##
-Allows you to 'destroy' an object without deleting the record or
+Allows you to "destroy" an object without deleting the record or
 associated records.
 
+### Destroying ###
 Overides the `destroy` method to set `destroyed_at` on an object. The
 default scope of the class is then set to return objects that have not
-been destroyed (i.e.,have `nil` for their destroyed_at value). The
-`undestroy` method can be called on an object to set its `destroyed_at`
-value to `nil`.
+been destroyed (i.e., have `nil` for their destroyed_at value). 
+
+### Un-destroying ###
+When you'd like to "undestroy" a record, call the `undestroy` method on
+the instance. This will set its `destroyed_at` value to `nil`, thereby
+including it in the default scope of the class again.
 
 To include this functionality on `has_many through` relationships,
 be sure to `include DestroyedAt` on the through model, as well as the
@@ -56,7 +60,8 @@ class User < ActiveRecord::Base
 end
 
 user = User.create
-user.destroy #=> true
+user.destroy 
+# => true
 ```
 
 ### Undestroying ###
