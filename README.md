@@ -86,6 +86,23 @@ user.destroyed_at
 model. They work similarly to the `before_destroy` and `after_destroy`
 callbacks.
 
+```ruby
+class User < ActiveRecord::Base
+  before_understroy :before_destroy_action
+  after_undestroy   :after_destroy_action
+  
+  private
+  
+  def before_destroy_action
+    ...
+  end
+  
+  def after_destroy_action
+    ...
+  end
+end
+```
+
 ## Authors ##
 
 * [Michael Dupuis](http://twitter.com/michaeldupuisjr)
