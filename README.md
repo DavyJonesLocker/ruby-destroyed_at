@@ -42,7 +42,7 @@ Allows you to "destroy" an object without deleting the record or
 associated records.
 
 ### Destroying ###
-Overides the `destroy` method to set `destroyed_at` on an object. The
+Overides `#destroy` to set `#destroyed_at` to the current time on an object. The
 default scope of the class is then set to return objects that have not
 been destroyed (i.e., have `nil` for their destroyed_at value).
 
@@ -62,8 +62,8 @@ user.destroyed_at
 ```
 
 ### Undestroying ####
-When you'd like to "undestroy" a record, call the `undestroy` method on
-the instance. This will set its `destroyed_at` value to `nil`, thereby
+When you'd like to "undestroy" a record, call the `#undestroy` method on
+the instance. This will set its `#destroyed_at` value to `nil`, thereby
 including it in the default scope of the class again.
 
 To include this functionality on `has_many through` relationships,
