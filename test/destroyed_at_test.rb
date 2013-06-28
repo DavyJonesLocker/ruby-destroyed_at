@@ -34,6 +34,15 @@ describe 'Destroying AR models' do
     person.after_flag.must_equal true
   end
 
+  it 'will run undestroy callbacks' do
+    person = Person.create(:destroyed_at => DateTime.current)
+    person.before_flag.wont_equal true
+    person.after_flag.wont_equal true
+    person.undestroy
+    person.before_flag.must_equal true
+    person.after_flag.must_equal true
+  end
+
   it 'will properly destroy relations' do
     user = User.create(:profile => Profile.new, :car => Car.new)
     user.reload
