@@ -32,7 +32,7 @@ class ActiveRecord::Base
 end
 ```
 
-** Please note you will need to make a migration **
+**Please note you will need to make a migration**
 
 Each model's table that is expected to have this behavior **must** have
 a `destroyed_at` column of type `DateTime`.
