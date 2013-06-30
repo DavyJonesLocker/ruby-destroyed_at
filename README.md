@@ -90,16 +90,16 @@ callbacks.
 
 ```ruby
 class User < ActiveRecord::Base
-  before_understroy :before_destroy_action
-  after_undestroy   :after_destroy_action
+  before_understroy :before_undestroy_action
+  after_undestroy   :after_undestroy_action
   
   private
   
-  def before_destroy_action
+  def before_undestroy_action
     ...
   end
   
-  def after_destroy_action
+  def after_undestroy_action
     ...
   end
 end
