@@ -18,7 +18,7 @@ module DestroyedAt
     end
   end
 
-  # Set an object's destroyed at time to nil.
+  # Set an object's destroyed_at time to nil.
   def undestroy
     state = nil
     run_callbacks(:undestroy) do
