@@ -91,7 +91,7 @@ callbacks.
 ```ruby
 class User < ActiveRecord::Base
   before_undestroy :before_undestroy_action
-  after_undestroy   :after_undestroy_action
+  after_undestroy  :after_undestroy_action
   
   private
   
