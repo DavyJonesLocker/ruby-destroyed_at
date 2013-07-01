@@ -83,7 +83,7 @@ user.destroyed_at
 # => nil
 ```
 
-#### Callbacks ####
+### Callbacks ###
 `before_undestroy` and `after_undestroy` callbacks are added to your
 model. They work similarly to the `before_destroy` and `after_destroy`
 callbacks.
@@ -104,6 +104,17 @@ class User < ActiveRecord::Base
   end
 end
 ```
+
+### Validations ###
+
+If you are using the `uniqueness` validator you will need to run it as:
+
+```ruby
+validates :email, uniquness: { conditions: { where(destroyed_at: nil) } }
+```
+
+Rails will by default not include default_scopes when querying for uniqueness. Rather than monkey 
+patching the validator we believe this is the best solution.
 
 ## Authors ##
 
