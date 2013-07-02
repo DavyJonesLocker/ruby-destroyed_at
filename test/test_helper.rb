@@ -48,8 +48,8 @@ class Person < User
   before_destroy :set_before_flag
   after_destroy  :set_after_flag
 
-  before_undestroy :set_before_flag
-  after_undestroy  :set_after_flag
+  before_restore :set_before_flag
+  after_restore  :set_after_flag
 
   attr_accessor :before_flag, :after_flag
 

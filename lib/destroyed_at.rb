@@ -5,7 +5,7 @@ module DestroyedAt
     klass.instance_eval do
       default_scope { where(destroyed_at: nil) }
       after_initialize :_set_destruction_state
-      define_model_callbacks :undestroy
+      define_model_callbacks :restore
     end
   end
 
@@ -19,12 +19,12 @@ module DestroyedAt
   end
 
   # Set an object's destroyed_at time to nil.
-  def undestroy
+  def restore
     state = nil
-    run_callbacks(:undestroy) do
+    run_callbacks(:restore) do
       if state = self.update_attribute(:destroyed_at, nil)
         @destroyed = false
-        _undestroy_associations
+        _restore_associations
       end
     end
     state
@@ -36,13 +36,13 @@ module DestroyedAt
     @destroyed = destroyed_at.present?
   end
 
-  def _undestroy_associations
+  def _restore_associations
     reflections.select { |key, value| value.options[:dependent] == :destroy }.keys.each do |key|
       assoc = association(key)
       if assoc.options[:through] && assoc.options[:dependent] == :destroy
         assoc = association(assoc.options[:through])
       end
-      assoc.scoped.unscoped.each { |r| r.undestroy if r.respond_to? :undestroy }
+      assoc.scoped.unscoped.each { |r| r.restore if r.respond_to? :restore }
     end
   end
 end
