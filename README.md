@@ -47,7 +47,7 @@ default scope of the class is then set to return objects that have not
 been destroyed (i.e., have `nil` for their destroyed_at value).
 
 `#destroyed?` will be `true` when your model is destroyed; it will be
-`false` when your model has been undestroyed.
+`false` when your model has been restored.
 
 ```ruby
 class User < ActiveRecord::Base
@@ -61,8 +61,8 @@ user.destroyed_at
 # => <DateTime>
 ```
 
-### Undestroying ####
-When you'd like to "undestroy" a record, call the `#undestroy` method on
+### Restoring ####
+When you'd like to "restore" a record, call the `#restore` method on
 the instance. This will set its `#destroyed_at` value to `nil`, thereby
 including it in the default scope of the class again.
 
@@ -77,29 +77,29 @@ end
 
 user = User.create
 user.destroy
-user.undestroy
+user.restore
 # => true
 user.destroyed_at
 # => nil
 ```
 
 ### Callbacks ###
-`before_undestroy` and `after_undestroy` callbacks are added to your
+`before_restore` and `after_restore` callbacks are added to your
 model. They work similarly to the `before_destroy` and `after_destroy`
 callbacks.
 
 ```ruby
 class User < ActiveRecord::Base
-  before_undestroy :before_undestroy_action
-  after_undestroy  :after_undestroy_action
+  before_restore :before_restore_action
+  after_restore  :after_restore_action
   
   private
   
-  def before_undestroy_action
+  def before_restore_action
     ...
   end
   
-  def after_undestroy_action
+  def after_restore_action
     ...
   end
 end

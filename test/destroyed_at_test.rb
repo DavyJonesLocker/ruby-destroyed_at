@@ -17,11 +17,11 @@ describe 'Destroying AR models' do
     end
   end
 
-  it 'can undestroy records' do
+  it 'can restore records' do
     user = User.create(:destroyed_at => DateTime.current)
     User.all.must_be_empty
     user.reload
-    user.undestroy
+    user.restore
     User.all.wont_be_empty
   end
 
@@ -34,11 +34,11 @@ describe 'Destroying AR models' do
     person.after_flag.must_equal true
   end
 
-  it 'will run undestroy callbacks' do
+  it 'will run restore callbacks' do
     person = Person.create(:destroyed_at => DateTime.current)
     person.before_flag.wont_equal true
     person.after_flag.wont_equal true
-    person.undestroy
+    person.restore
     person.before_flag.must_equal true
     person.after_flag.must_equal true
   end
@@ -55,18 +55,18 @@ describe 'Destroying AR models' do
     Car.unscoped.count.must_equal 0
   end
 
-  it 'can undestroy relationships' do
+  it 'can restore relationships' do
     user = User.create(:destroyed_at => DateTime.current)
     Profile.create(:destroyed_at => DateTime.current, :user => user)
     Profile.count.must_equal 0
-    user.undestroy
+    user.restore
     Profile.count.must_equal 1
   end
 
-  it 'will not undestroy relationships that have no destroy dependency' do
+  it 'will not restore relationships that have no destroy dependency' do
     user = User.create(:destroyed_at => DateTime.current, :show => Show.new(:destroyed_at => DateTime.current))
     Show.count.must_equal 0
-    user.undestroy
+    user.restore
     Show.count.must_equal 0
   end
 
@@ -74,7 +74,7 @@ describe 'Destroying AR models' do
     user = User.create(:destroyed_at => DateTime.current)
     Dinner.create(:destroyed_at => DateTime.current, :user => user)
     Dinner.count.must_equal 0
-    user.undestroy
+    user.restore
     Dinner.count.must_equal 1
   end
 
@@ -85,7 +85,7 @@ describe 'Destroying AR models' do
     fleet = Fleet.create(:destroyed_at => DateTime.current, :car => car)
     user.fleets = [fleet]
     user.cars.count.must_equal 0
-    user.undestroy
+    user.restore
     user.cars.count.must_equal 1
   end
 
@@ -95,7 +95,7 @@ describe 'Destroying AR models' do
     user.destroyed?.must_equal true
     user = User.unscoped.last
     user.destroyed?.must_equal true
-    user.undestroy
+    user.restore
     user.destroyed?.must_equal false
   end
 end
