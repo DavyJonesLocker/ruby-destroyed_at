@@ -110,7 +110,7 @@ end
 If you are using the `uniqueness` validator you will need to run it as:
 
 ```ruby
-validates :email, uniquness: { conditions: -> { where(destroyed_at: nil) } }
+validates :email, uniqueness: { conditions: -> { where(destroyed_at: nil) } }
 ```
 
 Rails will by default not include default_scopes when querying for uniqueness. Rather than monkey 
