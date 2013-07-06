@@ -34,6 +34,8 @@ module DestroyedAt
 
   def _set_destruction_state
     @destroyed = destroyed_at.present?
+    # Don't stop the other callbacks from running
+    true
   end
 
   def _restore_associations
