@@ -33,7 +33,11 @@ module DestroyedAt
   private
 
   def _set_destruction_state
-    @destroyed = destroyed_at.present?
+    begin
+      @destroyed = destroyed_at.present?
+    rescue ActiveRecord::MissingAttributeError
+      # in Rails 4 there is an error on projection queries
+    end
     # Don't stop the other callbacks from running
     true
   end

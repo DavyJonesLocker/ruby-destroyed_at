@@ -98,4 +98,9 @@ describe 'Destroying AR models' do
     user.restore
     user.destroyed?.must_equal false
   end
+
+  it 'properly selects columns' do
+    User.create
+    User.select(:id).must_be_kind_of ActiveRecord::Relation
+  end
 end
