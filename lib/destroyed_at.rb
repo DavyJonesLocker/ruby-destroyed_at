@@ -33,7 +33,7 @@ module DestroyedAt
   private
 
   def _set_destruction_state
-    @destroyed = destroyed_at.present? if respond_to?(:destroyed_at)
+    @destroyed = destroyed_at.present? if has_attribute?(:destroyed_at)
     # Don't stop the other callbacks from running
     true
   end
