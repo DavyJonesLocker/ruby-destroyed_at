@@ -9,11 +9,11 @@ describe 'Destroying AR models' do
   end
 
   it 'Destroying a model will set the timestamp it was destroyed at' do
-    date = DateTime.current
-    Timecop.freeze(date) do
+    time = Time.now
+    Timecop.freeze(time) do
       user = User.create
       user.destroy
-      user.destroyed_at.inspect.must_equal date.inspect
+      user.destroyed_at.must_equal time
     end
   end
 

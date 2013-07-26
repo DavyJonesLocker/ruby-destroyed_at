@@ -13,7 +13,7 @@ module DestroyedAt
   def destroy
     run_callbacks(:destroy) do
       destroy_associations
-      self.update_attribute(:destroyed_at, DateTime.current)
+      self.update_attribute(:destroyed_at, current_time_from_proper_timezone)
       @destroyed = true
     end
   end
