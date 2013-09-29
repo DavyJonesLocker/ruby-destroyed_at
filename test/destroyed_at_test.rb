@@ -103,4 +103,17 @@ describe 'Destroying AR models' do
     User.create
     User.select(:id).must_be_kind_of ActiveRecord::Relation
   end
+
+  it 'only destroys and restores related dependents' do
+    2.times do
+       User.create(dinners: [Dinner.create, Dinner.create, Dinner.create])
+    end
+  
+    User.first.destroy
+    Dinner.count.must_equal 3
+    User.first.destroy
+    Dinner.count.must_equal 0
+    User.unscoped.first.restore
+    Dinner.count.must_equal 3
+  end
 end
