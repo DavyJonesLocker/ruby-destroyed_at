@@ -44,8 +44,7 @@ module DestroyedAt
       if assoc.options[:through] && assoc.options[:dependent] == :destroy
         assoc = association(assoc.options[:through])
       end
-      relation = assoc.respond_to?(:scope) ? assoc.scope : assoc.scoped
-      relation.unscoped.each { |r| r.restore if r.respond_to? :restore }
+      assoc.association_scope.each { |r| r.restore if r.respond_to? :restore }
     end
   end
 end
