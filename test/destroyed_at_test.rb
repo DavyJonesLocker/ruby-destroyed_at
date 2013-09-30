@@ -108,12 +108,20 @@ describe 'Destroying AR models' do
     2.times do
        User.create(dinners: [Dinner.create, Dinner.create, Dinner.create])
     end
-  
+
     User.first.destroy
     Dinner.count.must_equal 3
     User.first.destroy
     Dinner.count.must_equal 0
     User.unscoped.first.restore
     Dinner.count.must_equal 3
+  end
+
+  it 'skips callbacks' do
+    user = User.create
+    user.destroy
+    user.before_save_count.must_equal nil
+    user.restore
+    user.before_save_count.must_equal nil
   end
 end

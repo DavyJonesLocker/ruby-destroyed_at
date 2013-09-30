@@ -13,7 +13,8 @@ module DestroyedAt
   def destroy
     run_callbacks(:destroy) do
       destroy_associations
-      self.update_attribute(:destroyed_at, current_time_from_proper_timezone)
+      self.destroyed_at = current_time_from_proper_timezone
+      self.save(callbacks: false)
       @destroyed = true
     end
   end
@@ -22,7 +23,8 @@ module DestroyedAt
   def restore
     state = nil
     run_callbacks(:restore) do
-      if state = self.update_attribute(:destroyed_at, nil)
+      self.destroyed_at = nil
+      if state = self.save(callbacks: false)
         @destroyed = false
         _restore_associations
       end

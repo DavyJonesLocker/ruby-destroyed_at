@@ -42,6 +42,16 @@ class User < ActiveRecord::Base
   has_one :show
   has_many :fleets
   has_many :cars, :through => :fleets, :dependent => :destroy
+  before_save :increment_counter
+
+  attr_accessor :before_save_count
+
+  private
+
+  def increment_counter
+    @counter ||= 0
+    @counter = @counter + 1
+  end
 end
 
 class Person < User
