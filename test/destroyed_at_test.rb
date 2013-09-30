@@ -124,4 +124,10 @@ describe 'Destroying AR models' do
     user.restore
     user.before_save_count.must_equal nil
   end
+
+  it 'skips validations on restore' do
+    user = User.create(nil_attribute: '123')
+    user.destroy
+    user.restore.must_equal true
+  end
 end

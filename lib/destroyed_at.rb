@@ -24,7 +24,7 @@ module DestroyedAt
     state = nil
     run_callbacks(:restore) do
       self.destroyed_at = nil
-      if state = self.save(callbacks: false)
+      if state = self.save(callbacks: false, validate: false)
         @destroyed = false
         _restore_associations
       end

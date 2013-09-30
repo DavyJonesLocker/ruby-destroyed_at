@@ -44,7 +44,7 @@ class User < ActiveRecord::Base
   has_many :cars, :through => :fleets, :dependent => :destroy
   before_save :increment_counter
 
-  attr_accessor :before_save_count
+  attr_accessor :before_save_count, :nil_attribute
 
   private
 
