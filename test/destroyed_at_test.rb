@@ -22,6 +22,7 @@ describe 'Destroying AR models' do
     User.all.must_be_empty
     user.reload
     user.restore
+    user.destroyed_at.must_be_nil
     User.all.wont_be_empty
   end
 
@@ -120,14 +121,17 @@ describe 'Destroying AR models' do
   it 'skips callbacks' do
     user = User.create
     user.destroy
-    user.before_save_count.must_equal nil
+    user.before_update_count.must_equal nil
     user.restore
-    user.before_save_count.must_equal nil
+    user.before_update_count.must_equal nil
   end
 
   it 'skips validations on restore' do
-    user = User.create(nil_attribute: '123')
+    user = User.create
+    user.validation_count.must_equal 1
     user.destroy
-    user.restore.must_equal true
+    user.validation_count.must_equal 1
+    user.restore
+    user.validation_count.must_equal 1
   end
 end

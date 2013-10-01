@@ -13,8 +13,9 @@ module DestroyedAt
   def destroy
     run_callbacks(:destroy) do
       destroy_associations
-      self.destroyed_at = current_time_from_proper_timezone
-      self.save(callbacks: false)
+      timestamp = current_time_from_proper_timezone
+      self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: timestamp)
+      raw_write_attribute(:destroyed_at, timestamp)
       @destroyed = true
     end
   end
@@ -23,8 +24,8 @@ module DestroyedAt
   def restore
     state = nil
     run_callbacks(:restore) do
-      self.destroyed_at = nil
-      if state = self.save(callbacks: false, validate: false)
+      if state = (self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: nil) == 1)
+        raw_write_attribute(:destroyed_at, nil)
         @destroyed = false
         _restore_associations
       end

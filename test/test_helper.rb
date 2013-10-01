@@ -42,15 +42,21 @@ class User < ActiveRecord::Base
   has_one :show
   has_many :fleets
   has_many :cars, :through => :fleets, :dependent => :destroy
-  before_save :increment_counter
+  before_update :increment_callback_counter
+  validate :increment_validation_counter
 
-  attr_accessor :before_save_count, :nil_attribute
+  attr_accessor :before_update_count, :validation_count
 
   private
 
-  def increment_counter
-    @counter ||= 0
-    @counter = @counter + 1
+  def increment_callback_counter
+    self.before_update_count ||= 0
+    self.before_update_count = self.before_update_count + 1
+  end
+
+  def increment_validation_counter
+    self.validation_count ||= 0
+    self.validation_count = self.validation_count + 1
   end
 end
 
