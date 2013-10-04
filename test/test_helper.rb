@@ -6,7 +6,7 @@ require 'byebug'
 require 'timecop'
 require 'database_cleaner'
 
-class Minitest::Spec
+class MiniTest::Spec
   class << self
     alias :context :describe
   end
@@ -95,6 +95,7 @@ end
 
 class Show < ActiveRecord::Base
   include DestroyedAt
+  belongs_to :user, :dependent => :destroy
 end
 
 class Fleet < ActiveRecord::Base

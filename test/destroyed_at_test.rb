@@ -5,7 +5,7 @@ describe 'Destroying AR models' do
     user = User.create
     user.destroy
     User.all.must_be_empty
-    User.unscoped.all.wont_be_empty
+    User.unscoped.load.wont_be_empty
   end
 
   it 'Destroying a model will set the timestamp it was destroyed at' do
@@ -184,5 +184,17 @@ describe 'Destroying AR models' do
     user.profile.must_equal profile_2
     profile_1.reload
     profile_1.destroyed_at.wont_equal nil
+  end
+
+  it 'destroys and restores dependencies in a belongs_to relationship' do
+    user = User.create
+    show = Show.create(user: user)
+    show.destroy
+    show.reload
+    user.reload
+    user.destroyed_at.wont_equal nil
+    show.restore
+    user.reload
+    user.destroyed_at.must_equal nil
   end
 end
