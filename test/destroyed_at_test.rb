@@ -134,4 +134,29 @@ describe 'Destroying AR models' do
     user.restore
     user.validation_count.must_equal 1
   end
+
+  it 'stays persisted after destruction' do
+    user = User.create
+    user.destroy
+    user.persisted?.must_equal true
+  end
+
+  it 'does not allow new records with destroyed_at columns present to be marked persisted' do
+    user = User.new(destroyed_at: Time.now)
+    user.persisted?.must_equal false
+  end
+
+  it 'is not persisted after deletion' do
+    user = User.create
+    user.delete
+    user.persisted?.must_equal false
+  end
+
+  it 'can delete destroyed records and they are marked as not persisted' do
+    user = User.create
+    user.destroy
+    user.persisted?.must_equal true
+    user.delete
+    user.persisted?.must_equal false
+  end
 end
