@@ -1,5 +1,7 @@
 require 'destroyed_at/version'
+require 'destroyed_at/belongs_to_association'
 require 'destroyed_at/has_many_association'
+require 'destroyed_at/has_one_association'
 
 module DestroyedAt
   def self.included(klass)
