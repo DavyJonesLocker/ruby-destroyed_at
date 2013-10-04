@@ -57,9 +57,11 @@ describe 'Destroying AR models' do
   end
 
   it 'can restore relationships' do
-    user = User.create(:destroyed_at => DateTime.current)
-    Profile.create(:destroyed_at => DateTime.current, :user => user)
+    timestamp = DateTime.current
+    user = User.create(:destroyed_at => timestamp)
+    Profile.create(:destroyed_at => timestamp, :user => user)
     Profile.count.must_equal 0
+    user.reload
     user.restore
     Profile.count.must_equal 1
   end
@@ -72,20 +74,23 @@ describe 'Destroying AR models' do
   end
 
   it 'will respect has many associations' do
-    user = User.create(:destroyed_at => DateTime.current)
-    Dinner.create(:destroyed_at => DateTime.current, :user => user)
+    timestamp = DateTime.current
+    user = User.create(:destroyed_at => timestamp)
+    Dinner.create(:destroyed_at => timestamp, :user => user)
     Dinner.count.must_equal 0
+    user.reload
     user.restore
     Dinner.count.must_equal 1
   end
 
   it 'will respect has many through associations' do
-    #user = User.create(:destroyed_at => DateTime.current, :fleets => [Fleet.new(:destroyed_at => DateTime.current, :car => Car.new)])
-    user = User.create(:destroyed_at => DateTime.current)
+    timestamp = DateTime.current
+    user = User.create(:destroyed_at => timestamp)
     car = Car.create
-    fleet = Fleet.create(:destroyed_at => DateTime.current, :car => car)
+    fleet = Fleet.create(:destroyed_at => timestamp, :car => car)
     user.fleets = [fleet]
     user.cars.count.must_equal 0
+    user.reload
     user.restore
     user.cars.count.must_equal 1
   end
@@ -158,5 +163,26 @@ describe 'Destroying AR models' do
     user.persisted?.must_equal true
     user.delete
     user.persisted?.must_equal false
+  end
+
+  it 'only restores dependencies destroyed with parent with has many' do
+    user = User.create
+    dinner_one = Dinner.create(user: user, destroyed_at: Time.now - 1.day)
+    dinner_two = Dinner.create(user: user)
+    user.destroy
+    user.restore
+    user.dinners.include?(dinner_one).must_equal false
+    user.dinners.include?(dinner_two).must_equal true
+  end
+
+  it 'only restores dependencies destroyed with parent with has one' do
+    user = User.create
+    profile_1 = Profile.create(user: user, destroyed_at: Time.now - 1.day)
+    profile_2 = Profile.create(user: user)
+    user.destroy
+    user.restore
+    user.profile.must_equal profile_2
+    profile_1.reload
+    profile_1.destroyed_at.wont_equal nil
   end
 end

@@ -1,7 +1,7 @@
 require 'bundler/setup'
+require 'active_record'
 require 'destroyed_at'
 require 'minitest/autorun'
-require 'active_record'
 require 'byebug'
 require 'timecop'
 require 'database_cleaner'

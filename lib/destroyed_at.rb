@@ -1,4 +1,5 @@
-require "destroyed_at/version"
+require 'destroyed_at/version'
+require 'destroyed_at/has_many_association'
 
 module DestroyedAt
   def self.included(klass)
@@ -10,12 +11,12 @@ module DestroyedAt
   end
 
   # Set an object's destroyed_at time.
-  def destroy
+  def destroy(timestamp = nil)
+    timestamp ||= current_time_from_proper_timezone
+    raw_write_attribute(:destroyed_at, timestamp)
     run_callbacks(:destroy) do
       destroy_associations
-      timestamp = current_time_from_proper_timezone
       self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: timestamp)
-      raw_write_attribute(:destroyed_at, timestamp)
       @destroyed = true
     end
   end
@@ -25,9 +26,10 @@ module DestroyedAt
     state = nil
     run_callbacks(:restore) do
       if state = (self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: nil) == 1)
+        _restore_associations
         raw_write_attribute(:destroyed_at, nil)
         @destroyed = false
-        _restore_associations
+        true
       end
     end
     state
@@ -53,10 +55,20 @@ module DestroyedAt
   def _restore_associations
     reflections.select { |key, value| value.options[:dependent] == :destroy }.keys.each do |key|
       assoc = association(key)
+      reload_association = false
       if assoc.options[:through] && assoc.options[:dependent] == :destroy
         assoc = association(assoc.options[:through])
       end
-      assoc.association_scope.each { |r| r.restore if r.respond_to? :restore }
+      assoc.association_scope.each do |r|
+        if r.respond_to?(:restore) && r.destroyed_at == self.destroyed_at
+          r.restore
+          reload_association = true
+        end
+      end
+
+      if reload_association
+        assoc.reload
+      end
     end
   end
 end
