@@ -33,6 +33,15 @@ module DestroyedAt
     state
   end
 
+  def persisted?
+    !new_record? && destroyed_at.present? || super
+  end
+
+  def delete
+    self.destroyed_at = nil
+    super
+  end
+
   private
 
   def _set_destruction_state
