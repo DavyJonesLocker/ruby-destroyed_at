@@ -33,6 +33,7 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE cars (id INTEGER PRIMARY KE
 ActiveRecord::Base.connection.execute(%{CREATE TABLE dinners (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE shows (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE fleets (id INTEGER PRIMARY KEY, destroyed_at DATETIME, user_id INTEGER, car_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE pets (id INTEGER PRIMARY KEY, user_id INTEGER);})
 
 class User < ActiveRecord::Base
   include DestroyedAt
@@ -42,6 +43,7 @@ class User < ActiveRecord::Base
   has_one :show
   has_many :fleets
   has_many :cars, :through => :fleets, :dependent => :destroy
+  has_many :pets
   before_update :increment_callback_counter
   validate :increment_validation_counter
 
@@ -102,4 +104,8 @@ class Fleet < ActiveRecord::Base
   include DestroyedAt
   belongs_to :user
   belongs_to :car
+end
+
+class Pet < ActiveRecord::Base
+  belongs_to :user
 end

@@ -197,4 +197,11 @@ describe 'Destroying AR models' do
     user.reload
     user.destroyed_at.must_equal nil
   end
+
+  it 'does not impact ActiveRecord::Relation.destroy on non destroyed_at models' do
+    user = User.create
+    pet  = Pet.create(user: user)
+    user.pets.destroy(pet.id)
+    user.pets.must_be_empty
+  end
 end
