@@ -84,14 +84,15 @@ user.destroyed_at
 ```
 
 ### Callbacks ###
-`before_restore` and `after_restore` callbacks are added to your
-model. They work similarly to the `before_destroy` and `after_destroy`
+`before_restore`, `after_restore` and `around_restore` callbacks are added to your
+model. They work similarly to the `before_destroy`, `after_destroy` and `around_restore`
 callbacks.
 
 ```ruby
 class User < ActiveRecord::Base
   before_restore :before_restore_action
   after_restore  :after_restore_action
+  around_restore :around_restore_action
   
   private
   
@@ -102,6 +103,11 @@ class User < ActiveRecord::Base
   def after_restore_action
     ...
   end
+
+  def around_restore_action
+    # before around
+    yield # restoring...
+    # after around
 end
 ```
 

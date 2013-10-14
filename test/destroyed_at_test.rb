@@ -39,9 +39,13 @@ describe 'Destroying AR models' do
     person = Person.create(:destroyed_at => DateTime.current)
     person.before_flag.wont_equal true
     person.after_flag.wont_equal true
+    person.around_before_flag.wont_equal true
+    person.around_after_flag.wont_equal true
     person.restore
     person.before_flag.must_equal true
     person.after_flag.must_equal true
+    person.around_before_flag.must_equal true
+    person.around_after_flag.must_equal true
   end
 
   it 'will properly destroy relations' do

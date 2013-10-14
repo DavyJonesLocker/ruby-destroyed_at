@@ -69,7 +69,9 @@ class Person < User
   before_restore :set_before_flag
   after_restore  :set_after_flag
 
-  attr_accessor :before_flag, :after_flag
+  around_restore :set_around_flags
+
+  attr_accessor :before_flag, :after_flag, :around_before_flag, :around_after_flag
 
   def set_before_flag
     self.before_flag = true
@@ -77,6 +79,12 @@ class Person < User
 
   def set_after_flag
     self.after_flag = true
+  end
+
+  def set_around_flags
+    self.around_before_flag = true
+    yield
+    self.around_after_flag = true
   end
 end
 
