@@ -9,6 +9,17 @@ module DestroyedAt
       default_scope { where(destroyed_at: nil) }
       after_initialize :_set_destruction_state
       define_model_callbacks :restore
+      extend ClassMethods
+    end
+  end
+
+  module ClassMethods
+    def destroyed
+      query = all.with_default_scope
+      query.where_values.reject! do |node|
+        Arel::Nodes::Equality === node && node.left.name == 'destroyed_at' && node.right.nil?
+      end
+      query.where.not(destroyed_at: nil)
     end
   end
 
