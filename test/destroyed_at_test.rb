@@ -175,7 +175,7 @@ describe 'Destroying AR models' do
     dinner_two = Dinner.create(user: user)
     user.destroy
     user.restore
-    user.dinners.reload
+    user.reload
     user.dinners.wont_include dinner_one
     user.dinners.must_include dinner_two
   end

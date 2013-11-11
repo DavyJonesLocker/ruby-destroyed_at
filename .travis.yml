@@ -1,2 +1,7 @@
 rvm:
-  - 2.0.0
+- 2.0.0
+cache: bundler
+notifications:
+  hipchat:
+    rooms:
+      secure: iiJtp86tG36yFBxnPPnvn93QYrGdLoqmJBlhRJLgDDW0ICwAUnzsvIdNpV6pccFdfwB8zMgDl+ZPbnAuYnGzOUEWWkPIL2Ifsjrp11HwPl0AdIwCA9a/EFZv/hO64EPCC/aDPUpAuQh9rG5wH1nkwXJSqXT6bYaxZnKA9oYQ1QY=
