@@ -175,8 +175,9 @@ describe 'Destroying AR models' do
     dinner_two = Dinner.create(user: user)
     user.destroy
     user.restore
-    user.dinners.include?(dinner_one).must_equal false
-    user.dinners.include?(dinner_two).must_equal true
+    user.dinners.reload
+    user.dinners.wont_include dinner_one
+    user.dinners.must_include dinner_two
   end
 
   it 'only restores dependencies destroyed with parent with has one' do
