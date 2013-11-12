@@ -174,8 +174,10 @@ describe 'Destroying AR models' do
     dinner_one = Dinner.create(user: user, destroyed_at: Time.now - 1.day)
     dinner_two = Dinner.create(user: user)
     user.destroy
+    user.reload # We have to reload the object before restoring in the test
+                # because the in memory object has greater precision than
+                # the database records
     user.restore
-    user.reload
     user.dinners.wont_include dinner_one
     user.dinners.must_include dinner_two
   end
