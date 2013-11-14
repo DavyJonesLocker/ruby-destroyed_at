@@ -1,7 +1,9 @@
 rvm:
 - 2.0.0
-cache: bundler
+
 notifications:
   hipchat:
     rooms:
-      secure: iiJtp86tG36yFBxnPPnvn93QYrGdLoqmJBlhRJLgDDW0ICwAUnzsvIdNpV6pccFdfwB8zMgDl+ZPbnAuYnGzOUEWWkPIL2Ifsjrp11HwPl0AdIwCA9a/EFZv/hO64EPCC/aDPUpAuQh9rG5wH1nkwXJSqXT6bYaxZnKA9oYQ1QY=
+      secure: HD93T2k0sXQYPk/SLwROvvbQmMDqOxxdgd3eKhocYmH/nKcU/+p3xIls1qstnUh+G4kVwj2ZhWkYg7lfg4rmDfO7RlKWA9zTX3Aaed4cSF/Od54S1Dqwl12KGSITs/nrY2W5zQ+JJ5chFKRYuiRpqb4cPQeafJojccHdaYjYShM=
+    template:
+      - '@all %{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
