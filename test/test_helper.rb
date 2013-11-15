@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   has_many :fleets
   has_many :cars, :through => :fleets, :dependent => :destroy
   has_many :pets
+
   before_update :increment_callback_counter
   validate :increment_validation_counter
 
