@@ -45,12 +45,23 @@ describe 'destroying an activerecord instance' do
     post.persisted?.must_equal true
   end
 
-  it 'destroys dependent relations with DestroyedAt' do
+  it 'destroys dependent relation with DestroyedAt' do
     post.comments.create
     Post.count.must_equal 1
     Comment.count.must_equal 1
     post.destroy
     Post.count.must_equal 0
+    Comment.count.must_equal 0
+  end
+
+  it 'destroys dependent through relation with DestroyedAt' do
+    commenter = Commenter.create
+    Comment.create(:post => post, :commenter => commenter)
+
+    Commenter.count.must_equal 1
+    Comment.count.must_equal 1
+    post.destroy
+    Commenter.count.must_equal 1
     Comment.count.must_equal 0
   end
 
@@ -64,6 +75,7 @@ describe 'destroying an activerecord instance' do
 end
 
 describe 'restoring an activerecord instance' do
+  let(:author) { Author.create }
   let(:timestamp) { DateTime.current }
   let(:post) { Post.create(:destroyed_at => timestamp) }
 
@@ -87,7 +99,7 @@ describe 'restoring an activerecord instance' do
     initial_count.must_equal post.validation_count
   end
 
-  it 'restores a has_many relationship with DestroyedAt' do
+  it 'restores a dependent has_many relation with DestroyedAt' do
     Comment.create(:destroyed_at => timestamp, :post => post)
     Comment.count.must_equal 0
     post.reload
@@ -95,90 +107,65 @@ describe 'restoring an activerecord instance' do
     Comment.count.must_equal 1
   end
 
-  it 'restores a has_many through relationship with DestroyedAt' do
-    Category.create(:destroyed_at => timestamp, :post => post)
+  it 'does not restore a non-dependent relation with DestroyedAt' do
+    Post.count.must_equal 0
+    Author.count.must_equal 0
+    post.reload
+    post.restore
+    Post.count.must_equal 1
+    Author.count.must_equal 0
+  end
+
+  it 'restores a dependent through relation with DestroyedAt' do
+    commenter = Commenter.create
+    Comment.create(:post => post, :commenter => commenter, :destroyed_at => timestamp)
+
+    Commenter.count.must_equal 1
     Comment.count.must_equal 0
     post.reload
     post.restore
+    Commenter.count.must_equal 1
     Comment.count.must_equal 1
+  end
+
+  it 'restores only the dependent relationships destroyed when the parent was destroyed' do
+    post = Post.create
+    comment_1 = Comment.create(post: post, destroyed_at: Time.now - 1.day)
+    comment_2 = Comment.create(post: post)
+    post.destroy
+    post.reload # We have to reload the object before restoring in the test
+                # because the in memory object has greater precision than
+                # the database records
+    post.restore
+    post.comments.wont_include comment_1
+    post.comments.must_include comment_2
   end
 end
 
-# describe 'destroying and restoring an activerecord instance' do
+describe 'deleting a record' do
+  it 'is not persisted after deletion' do
+    post = Post.create
+    post.delete
+    post.persisted?.must_equal false
+  end
 
-  # it 'restores has_many through relationship with DestroyedAt' do
-    # timestamp = DateTime.current
-    # post = Post.create(:destroyed_at => timestamp) # has_many cars through fleets
-    # car = Car.create # does not include #destroyed_at
-    # fleet = Fleet.create(:destroyed_at => timestamp, :car => car) # includes DestroyedAt
-    # post.fleets = [fleet]
-    # post.cars.count.must_equal 0
-    # post.reload
-    # post.restore
-    # post.cars.count.must_equal 1
-  # end
+  it 'can delete destroyed records and they are marked as not persisted' do
+    post = Post.create
+    post.destroy
+    post.persisted?.must_equal true
+    post.delete
+    post.persisted?.must_equal false
+  end
+end
 
-  # it 'restores only the has_many dependent relationships destroyed when the parent was destroyed' do
-    # post = Post.create
-    # dinner_one = Comment.create(post: post, destroyed_at: Time.now - 1.day)
-    # dinner_two = Comment.create(post: post)
-    # post.destroy
-    # post.reload # We have to reload the object before restoring in the test
-                # # because the in memory object has greater precision than
-                # # the database records
-    # post.restore
-    # post.comments.wont_include dinner_one
-    # post.comments.must_include dinner_two
-  # end
-
-  # it 'restores only the has_one dependent relationships destroyed when the parent was destroyed' do
-    # post = Post.create
-    # profile_1 = Profile.create(post: post, destroyed_at: Time.now - 1.day)
-    # profile_2 = Profile.create(post: post)
-    # post.destroy
-    # post.restore
-    # post.profile.must_equal profile_2
-    # profile_1.reload
-    # profile_1.destroyed_at.wont_equal nil
-  # end
-
-  # it 'destroys and restores dependent relationships in a belongs_to relationship' do
-    # post = Post.create
-    # show = Show.create(post: post)
-    # show.destroy
-    # show.reload
-    # post.reload
-    # post.destroyed_at.wont_equal nil # post is dependent on show
-    # show.restore
-    # post.reload
-    # post.destroyed_at.must_equal nil
-  # end
-# end
-
-# describe 'deleting a record' do
-  # it 'is not persisted after deletion' do
-    # post = Post.create
-    # post.delete
-    # post.persisted?.must_equal false
-  # end
-
-  # it 'can delete destroyed records and they are marked as not persisted' do
-    # post = Post.create
-    # post.destroy
-    # post.persisted?.must_equal true
-    # post.delete
-    # post.persisted?.must_equal false
-  # end
-# end
-
-# describe 'destroying an activerecord instance without DestroyedAt' do
-  # it 'does not impact ActiveRecord::Relation.destroy' do
-    # post = Post.create
-    # pet  = Pet.create(post: post)
-    # post.pets.destroy(pet.id)
-    # post.pets.must_be_empty
-  # end
-# end
+describe 'destroying an activerecord instance without DestroyedAt' do
+  it 'does not impact ActiveRecord::Relation.destroy' do
+    post = Post.create
+    categorization  = Categorization.create(post: post)
+    post.categorizations.destroy(categorization.id)
+    post.categorizations.must_be_empty
+  end
+end
 
 describe 'creating a destroyed record' do
   it 'does not allow new records with destroyed_at columns present to be marked persisted' do

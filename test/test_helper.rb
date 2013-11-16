@@ -30,7 +30,8 @@ DatabaseCleaner.strategy = :truncation
 ActiveRecord::Base.connection.execute(%{CREATE TABLE authors (id INTEGER PRIMARY KEY);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE categories (id INTEGER PRIMARY KEY);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE categorizations (id INTEGER PRIMARY KEY, category_id INTEGER, post_id INTEGER);})
-ActiveRecord::Base.connection.execute(%{CREATE TABLE comments (id INTEGER PRIMARY KEY, post_id INTEGER, destroyed_at DATETIME);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE comments (id INTEGER PRIMARY KEY, commenter_id INTEGER, post_id INTEGER, destroyed_at DATETIME);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE commenters (id INTEGER PRIMARY KEY, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE images (id INTEGER PRIMARY KEY, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE posts (id INTEGER PRIMARY KEY, author_id INTEGER, destroyed_at DATETIME);})
 
@@ -51,6 +52,13 @@ end
 class Comment < ActiveRecord::Base
   include DestroyedAt
   belongs_to :post
+  belongs_to :commenter
+end
+
+class Commenter < ActiveRecord::Base
+  include DestroyedAt
+  has_many :comments, dependent: :destroy
+  has_many :posts, through: :comments
 end
 
 class Post < ActiveRecord::Base
@@ -60,6 +68,7 @@ class Post < ActiveRecord::Base
   has_many :categories, through: :categorizations
   has_many :categorizations, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many :commenters, through: :comments
 
   before_destroy :increment_destroy_callback_counter
   before_restore :increment_restore_callback_counter
@@ -91,4 +100,3 @@ class Post < ActiveRecord::Base
     self.validation_count = self.validation_count + 1
   end
 end
-
