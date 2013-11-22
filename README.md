@@ -37,6 +37,9 @@ end
 Each model's table that is expected to have this behavior **must** have
 a `destroyed_at` column of type `DateTime`.
 
+It is recommended that you add an index on the model's `destroyed_at` column,
+so that your database does not have to do a table scan for every query.
+
 ## Usage ##
 Allows you to "destroy" an object without deleting the record or
 associated records.
