@@ -1,214 +1,175 @@
 require 'test_helper'
 
-describe 'Destroying AR models' do
-  it 'Calling destroy on a model should only safe destroy record' do
-    user = User.create
-    user.destroy
-    User.all.must_be_empty
-    User.unscoped.load.wont_be_empty
-  end
+describe 'destroying an activerecord instance' do
+  let(:post) { Post.create }
 
-  it 'Destroying a model will set the timestamp it was destroyed at' do
+  it 'sets the timestamp it was destroyed at' do
     time = Time.now
     Timecop.freeze(time) do
-      user = User.create
-      user.destroy
-      user.destroyed_at.must_equal time
+      post = Post.create
+      post.destroy
+      post.destroyed_at.must_equal time
     end
   end
 
-  it 'can restore records' do
-    user = User.create(:destroyed_at => DateTime.current)
-    User.all.must_be_empty
-    user.reload
-    user.restore
-    user.destroyed_at.must_be_nil
-    User.all.wont_be_empty
+  it 'does not delete the record' do
+    post.destroy
+    Post.all.must_be_empty
+    Post.unscoped.load.wont_be_empty
   end
 
-  it 'will run destroy callbacks' do
-    person = Person.create
-    person.before_flag.wont_equal true
-    person.after_flag.wont_equal true
-    person.destroy
-    person.before_flag.must_equal true
-    person.after_flag.must_equal true
+  it 'sets #destroyed?' do
+    post.destroy
+    post.destroyed?.must_equal true
+    post = Post.unscoped.last
+    post.destroyed?.must_equal true
+    post.restore
+    post.destroyed?.must_equal false
   end
 
-  it 'will run restore callbacks' do
-    person = Person.create(:destroyed_at => DateTime.current)
-    person.before_flag.wont_equal true
-    person.after_flag.wont_equal true
-    person.around_before_flag.wont_equal true
-    person.around_after_flag.wont_equal true
-    person.restore
-    person.before_flag.must_equal true
-    person.after_flag.must_equal true
-    person.around_before_flag.must_equal true
-    person.around_after_flag.must_equal true
+  it 'runs destroy callbacks' do
+    post.destroy_callback_count.must_equal nil
+    post.destroy
+    post.destroy_callback_count.must_equal 1
   end
 
-  it 'will properly destroy relations' do
-    user = User.create(:profile => Profile.new, :car => Car.new)
-    user.reload
-    user.profile.wont_be_nil
-    user.car.wont_be_nil
-    user.destroy
-    Profile.count.must_equal 0
-    Profile.unscoped.count.must_equal 1
-    Car.count.must_equal 0
-    Car.unscoped.count.must_equal 0
-  end
-
-  it 'can restore relationships' do
-    timestamp = DateTime.current
-    user = User.create(:destroyed_at => timestamp)
-    Profile.create(:destroyed_at => timestamp, :user => user)
-    Profile.count.must_equal 0
-    user.reload
-    user.restore
-    Profile.count.must_equal 1
-  end
-
-  it 'will not restore relationships that have no destroy dependency' do
-    user = User.create(:destroyed_at => DateTime.current, :show => Show.new(:destroyed_at => DateTime.current))
-    Show.count.must_equal 0
-    user.restore
-    Show.count.must_equal 0
-  end
-
-  it 'will respect has many associations' do
-    timestamp = DateTime.current
-    user = User.create(:destroyed_at => timestamp)
-    Dinner.create(:destroyed_at => timestamp, :user => user)
-    Dinner.count.must_equal 0
-    user.reload
-    user.restore
-    Dinner.count.must_equal 1
-  end
-
-  it 'will respect has many through associations' do
-    timestamp = DateTime.current
-    user = User.create(:destroyed_at => timestamp)
-    car = Car.create
-    fleet = Fleet.create(:destroyed_at => timestamp, :car => car)
-    user.fleets = [fleet]
-    user.cars.count.must_equal 0
-    user.reload
-    user.restore
-    user.cars.count.must_equal 1
-  end
-
-  it 'properly sets #destroyed?' do
-    user = User.create
-    user.destroy
-    user.destroyed?.must_equal true
-    user = User.unscoped.last
-    user.destroyed?.must_equal true
-    user.restore
-    user.destroyed?.must_equal false
-  end
-
-  it 'properly selects columns' do
-    User.create
-    User.select(:id).must_be_kind_of ActiveRecord::Relation
-  end
-
-  it 'only destroys and restores related dependents' do
-    2.times do
-       User.create(dinners: [Dinner.create, Dinner.create, Dinner.create])
-    end
-
-    User.first.destroy
-    Dinner.count.must_equal 3
-    User.first.destroy
-    Dinner.count.must_equal 0
-    User.unscoped.first.restore
-    Dinner.count.must_equal 3
-  end
-
-  it 'skips callbacks' do
-    user = User.create
-    user.destroy
-    user.before_update_count.must_equal nil
-    user.restore
-    user.before_update_count.must_equal nil
-  end
-
-  it 'skips validations on restore' do
-    user = User.create
-    user.validation_count.must_equal 1
-    user.destroy
-    user.validation_count.must_equal 1
-    user.restore
-    user.validation_count.must_equal 1
+  it 'does not run update callbacks' do
+    post.destroy
+    post.update_callback_count.must_equal nil
+    post.restore
+    post.update_callback_count.must_equal nil
   end
 
   it 'stays persisted after destruction' do
-    user = User.create
-    user.destroy
-    user.persisted?.must_equal true
+    post.destroy
+    post.persisted?.must_equal true
   end
 
-  it 'does not allow new records with destroyed_at columns present to be marked persisted' do
-    user = User.new(destroyed_at: Time.now)
-    user.persisted?.must_equal false
+  it 'destroys dependent relation with DestroyedAt' do
+    post.comments.create
+    Post.count.must_equal 1
+    Comment.count.must_equal 1
+    post.destroy
+    Post.count.must_equal 0
+    Comment.count.must_equal 0
   end
 
+  it 'destroys dependent through relation with DestroyedAt' do
+    commenter = Commenter.create
+    Comment.create(:post => post, :commenter => commenter)
+
+    Commenter.count.must_equal 1
+    Comment.count.must_equal 1
+    post.destroy
+    Commenter.count.must_equal 1
+    Comment.count.must_equal 0
+  end
+
+  it 'deletes dependent relations without DestroyedAt' do
+    category = Category.create
+    Categorization.create(:category => category, :post => post)
+    post.categorizations.count.must_equal 1
+    post.destroy
+    Categorization.unscoped.count.must_equal 0
+  end
+end
+
+describe 'restoring an activerecord instance' do
+  let(:author) { Author.create }
+  let(:timestamp) { DateTime.current }
+  let(:post) { Post.create(:destroyed_at => timestamp) }
+
+  it 'restores the record' do
+    Post.all.must_be_empty
+    post.reload
+    post.restore
+    post.destroyed_at.must_be_nil
+    Post.all.wont_be_empty
+  end
+
+  it 'runs the restore callbacks' do
+    post.restore_callback_count.must_equal nil
+    post.restore
+    post.restore_callback_count.must_equal 1
+  end
+
+  it 'does not run restore validations' do
+    initial_count = post.validation_count
+    post.restore
+    initial_count.must_equal post.validation_count
+  end
+
+  it 'restores a dependent has_many relation with DestroyedAt' do
+    Comment.create(:destroyed_at => timestamp, :post => post)
+    Comment.count.must_equal 0
+    post.reload
+    post.restore
+    Comment.count.must_equal 1
+  end
+
+  it 'does not restore a non-dependent relation with DestroyedAt' do
+    Post.count.must_equal 0
+    Author.count.must_equal 0
+    post.reload
+    post.restore
+    Post.count.must_equal 1
+    Author.count.must_equal 0
+  end
+
+  it 'restores a dependent through relation with DestroyedAt' do
+    commenter = Commenter.create
+    Comment.create(:post => post, :commenter => commenter, :destroyed_at => timestamp)
+
+    Commenter.count.must_equal 1
+    Comment.count.must_equal 0
+    post.reload
+    post.restore
+    Commenter.count.must_equal 1
+    Comment.count.must_equal 1
+  end
+
+  it 'restores only the dependent relationships destroyed when the parent was destroyed' do
+    post = Post.create
+    comment_1 = Comment.create(post: post, destroyed_at: Time.now - 1.day)
+    comment_2 = Comment.create(post: post)
+    post.destroy
+    post.reload # We have to reload the object before restoring in the test
+                # because the in memory object has greater precision than
+                # the database records
+    post.restore
+    post.comments.wont_include comment_1
+    post.comments.must_include comment_2
+  end
+end
+
+describe 'deleting a record' do
   it 'is not persisted after deletion' do
-    user = User.create
-    user.delete
-    user.persisted?.must_equal false
+    post = Post.create
+    post.delete
+    post.persisted?.must_equal false
   end
 
   it 'can delete destroyed records and they are marked as not persisted' do
-    user = User.create
-    user.destroy
-    user.persisted?.must_equal true
-    user.delete
-    user.persisted?.must_equal false
+    post = Post.create
+    post.destroy
+    post.persisted?.must_equal true
+    post.delete
+    post.persisted?.must_equal false
   end
+end
 
-  it 'only restores dependencies destroyed with parent with has many' do
-    user = User.create
-    dinner_one = Dinner.create(user: user, destroyed_at: Time.now - 1.day)
-    dinner_two = Dinner.create(user: user)
-    user.destroy
-    user.reload # We have to reload the object before restoring in the test
-                # because the in memory object has greater precision than
-                # the database records
-    user.restore
-    user.dinners.wont_include dinner_one
-    user.dinners.must_include dinner_two
+describe 'destroying an activerecord instance without DestroyedAt' do
+  it 'does not impact ActiveRecord::Relation.destroy' do
+    post = Post.create
+    categorization  = Categorization.create(post: post)
+    post.categorizations.destroy(categorization.id)
+    post.categorizations.must_be_empty
   end
+end
 
-  it 'only restores dependencies destroyed with parent with has one' do
-    user = User.create
-    profile_1 = Profile.create(user: user, destroyed_at: Time.now - 1.day)
-    profile_2 = Profile.create(user: user)
-    user.destroy
-    user.restore
-    user.profile.must_equal profile_2
-    profile_1.reload
-    profile_1.destroyed_at.wont_equal nil
-  end
-
-  it 'destroys and restores dependencies in a belongs_to relationship' do
-    user = User.create
-    show = Show.create(user: user)
-    show.destroy
-    show.reload
-    user.reload
-    user.destroyed_at.wont_equal nil
-    show.restore
-    user.reload
-    user.destroyed_at.must_equal nil
-  end
-
-  it 'does not impact ActiveRecord::Relation.destroy on non destroyed_at models' do
-    user = User.create
-    pet  = Pet.create(user: user)
-    user.pets.destroy(pet.id)
-    user.pets.must_be_empty
+describe 'creating a destroyed record' do
+  it 'does not allow new records with destroyed_at columns present to be marked persisted' do
+    post = Post.new(destroyed_at: Time.now)
+    post.persisted?.must_equal false
   end
 end
