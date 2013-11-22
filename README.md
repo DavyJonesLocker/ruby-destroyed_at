@@ -39,6 +39,12 @@ a `destroyed_at` column of type `DateTime`.
 
 It is recommended that you add an index on the model's `destroyed_at` column,
 so that your database does not have to do a table scan for every query.
+Only Postgres' query indexes will be of any benefit:
+
+```db
+CREATE INDEX ON users WHERE destroyed_at IS NULL;
+CREATE INDEX ON users WHERE destroyed_at IS NOT NULL;
+```
 
 ## Usage ##
 Allows you to "destroy" an object without deleting the record or
