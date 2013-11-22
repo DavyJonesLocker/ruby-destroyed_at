@@ -4,3 +4,5 @@
   Cardarella
 * Relation.destoyed removes the destoyed scope and adds a scope 
   for records that have been destoyed - Dan McClain
+* Added /restore route for restorable resources - Brian Cardarella &
+  Romina Vargas
