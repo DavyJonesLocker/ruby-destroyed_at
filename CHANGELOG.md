@@ -1,3 +1,8 @@
+## 0.3.1
+
+* [Bug] Fixed route not raising when resource constant does not exist -
+  Brian Cardarella
+
 ## 0.3.0
 
 * Fix issue with has_many destroy against regular models - Brian

@@ -3,6 +3,8 @@ require 'action_dispatch'
 require 'action_dispatch/routing/route_set'
 require 'action_controller'
 
+class CarsController < ActionController::Base; end
+class AuthorsController < ActionController::Base; end
 class CommentsController < ActionController::Base; end
 
 class MapperTest < ActiveSupport::TestCase
@@ -53,6 +55,19 @@ class MapperTest < ActiveSupport::TestCase
       assert false, 'this should not be reached'
     rescue ActionController::RoutingError
       assert true, 'path not recognized'
+    end
+  end
+
+  test 'does not raise if contstant does not exist for resource' do
+    draw do
+      resources :cars
+    end
+
+    begin
+      @set.recognize_path('/cars', method: 'get')
+      assert true, 'path recognized'
+    rescue ActionController::RoutingError
+      assert false, 'this should not be reached'
     end
   end
 

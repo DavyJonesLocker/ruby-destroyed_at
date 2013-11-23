@@ -14,7 +14,9 @@ ActionDispatch::Routing::Mapper.send(:prepend, DestroyedAt::Routes)
 module DestroyedAt::Resource
   def default_actions
     actions = super
-    if self.name.camelcase.singularize.constantize.included_modules.include?(DestroyedAt)
+    class_name = self.name.camelcase.singularize
+
+    if Module.const_defined?(class_name) && class_name.constantize.included_modules.include?(DestroyedAt)
       actions << :restore
     end
 
