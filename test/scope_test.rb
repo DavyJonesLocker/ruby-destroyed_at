@@ -48,5 +48,22 @@ describe 'Scopes' do
         destroyed_comments.wont_include comment_3
       end
     end
+
+    context 'Called on a child relation and passing in a destroyed_at time' do
+      let(:destroyed_comments) { post.comments.destroyed(post.destroyed_at) }
+
+      before do
+        post.destroy
+        comment_2.update(destroyed_at: post.destroyed_at - 1.hour)
+      end
+
+      it 'returns all child records with a destroyed_at time that matches the passed in time' do
+        destroyed_comments.must_include comment_1
+      end
+
+      it 'does not return child records with a destroyed_at time that does not match the passed in time' do
+        destroyed_comments.wont_include comment_2
+      end
+    end
   end
 end
