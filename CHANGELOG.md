@@ -1,3 +1,8 @@
+## 0.4.0
+* Enables retrieval of destroyed objects by time via `.destroyed`
+  method, which now takes an optional time attribute. - Lin Reid & Dan
+McClain
+
 ## 0.3.1
 
 * [Bug] Fixed route not raising when resource constant does not exist -
