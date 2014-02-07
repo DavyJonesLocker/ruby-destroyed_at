@@ -63,6 +63,8 @@ describe 'Scopes' do
 
       it 'does not return child records with a destroyed_at time that does not match the passed in time' do
         destroyed_comments.wont_include comment_2
+        destroyed_comments.wont_include comment_3
+        destroyed_comments.wont_include comment_4
       end
     end
   end
