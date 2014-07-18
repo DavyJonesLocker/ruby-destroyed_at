@@ -1,3 +1,6 @@
+## Unreleased
+* Updates `reflections` to `_reflections` - mukimov
+
 ## 0.4.0
 
 * Updates for Rails 4.1
