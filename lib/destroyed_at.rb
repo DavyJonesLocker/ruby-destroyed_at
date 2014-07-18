@@ -67,7 +67,7 @@ module DestroyedAt
   end
 
   def _restore_associations
-    reflections.select { |key, value| value.options[:dependent] == :destroy }.keys.each do |key|
+    _reflections.select { |key, value| value.options[:dependent] == :destroy }.keys.each do |key|
       assoc = association(key)
       reload_association = false
       if assoc.options[:through] && assoc.options[:dependent] == :destroy
