@@ -13,7 +13,7 @@ module DestroyedAt::Mapper
   module Resource
     def default_actions
       actions = super
-      if self.name.camelcase.singularize.constantize.included_modules.include?(DestroyedAt)
+      if self.singular.camelcase.constantize.included_modules.include?(DestroyedAt)
         actions << :restore
       end
 
