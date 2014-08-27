@@ -71,6 +71,19 @@ class MapperTest < ActiveSupport::TestCase
     end
   end
 
+  test 'does not raise if `:as` option is used in routes' do
+    draw do
+      resources :cars, as: :automobiles
+    end
+
+    begin
+      @set.recognize_path('/cars', method: :get)
+      assert true, 'path recognized'
+    rescue ActionController::RoutingError
+      assert false, 'this should not be reached'
+    end
+  end
+
   private
 
   def draw(&block)
