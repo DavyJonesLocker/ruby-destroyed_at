@@ -1,12 +1,10 @@
 module DestroyedAt
   module HasOneAssociation
     def delete(method = options[:dependent])
-      if load_target
-        if method == :destroy && target.respond_to?(:destroyed_at)
-          target.destroy(owner.destroyed_at)
-        else
-          super
-        end
+      if load_target && method == :destroy
+        DestroyedAt.destroy_target_of_association(target, owner)
+      else
+        super
       end
     end
   end

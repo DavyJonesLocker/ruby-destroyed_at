@@ -14,6 +14,14 @@ module DestroyedAt
     end
   end
 
+  def self.destroy_target_of_association(owner, target)
+    if target.respond_to?(:destroyed_at) && owner.respond_to?(:destroyed_at)
+      target.destroy(owner.destroyed_at)
+    elsif target.respond_to?(:destroyed_at)
+      target.destroy
+    end
+  end
+
   module ClassMethods
     def destroyed(time = nil)
       query = where.not(destroyed_at: nil)
