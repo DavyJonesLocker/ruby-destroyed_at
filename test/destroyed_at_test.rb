@@ -72,6 +72,15 @@ describe 'destroying an activerecord instance' do
     post.destroy
     Categorization.unscoped.count.must_equal 0
   end
+
+  it 'destroys child when parent does not mixin DestroyedAt' do
+    avatar = Avatar.create
+    author = Author.create(avatar: avatar)
+    author.destroy!
+
+    Author.count.must_equal 0
+    Avatar.count.must_equal 1
+  end
 end
 
 describe 'restoring an activerecord instance' do

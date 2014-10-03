@@ -1,4 +1,6 @@
 ## Unreleased
+* Fixes an exception which was was raised when attempting to destroy a 
+target record whose parent did not mix in DestroyedAt.
 * Updates `reflections` to `_reflections` - mukimov
 
 ## 0.4.0
