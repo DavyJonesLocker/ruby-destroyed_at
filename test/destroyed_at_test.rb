@@ -182,3 +182,15 @@ describe 'creating a destroyed record' do
     post.persisted?.must_equal false
   end
 end
+
+describe 'non destroyed-at models' do
+  it 'can destroy has_on dependants' do
+    person = Person.create!
+    pet = person.create_pet!
+
+    person.destroy
+
+    assert_equal(0, Person.count, 'Person must be zero')
+    assert_equal(0, Pet.count, 'Pet must be zero')
+  end
+end

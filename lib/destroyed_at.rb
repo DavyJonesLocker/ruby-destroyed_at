@@ -22,6 +22,10 @@ module DestroyedAt
     end
   end
 
+  def self.has_destroy_at?(object)
+    object.class.included_modules.include?(DestroyedAt)
+  end
+
   module ClassMethods
     def destroyed(time = nil)
       query = where.not(destroyed_at: nil)
