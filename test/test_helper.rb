@@ -35,10 +35,20 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE comments (id INTEGER PRIMAR
 ActiveRecord::Base.connection.execute(%{CREATE TABLE commenters (id INTEGER PRIMARY KEY, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE images (id INTEGER PRIMARY KEY, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE posts (id INTEGER PRIMARY KEY, author_id INTEGER, destroyed_at DATETIME);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE people (id INTEGER PRIMARY KEY);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE pets (id INTEGER PRIMARY KEY, person_id INTEGER);})
 
 class Author < ActiveRecord::Base
   has_many :posts
   has_one :avatar, dependent: :destroy
+end
+
+class Person < ActiveRecord::Base
+  has_one :pet, dependent: :destroy
+end
+
+class Pet < ActiveRecord::Base
+  belongs_to :person
 end
 
 class Avatar < ActiveRecord::Base

@@ -1,7 +1,7 @@
 module DestroyedAt
   module HasOneAssociation
     def delete(method = options[:dependent])
-      if load_target && method == :destroy
+      if DestroyedAt.has_destroy_at?(target) && load_target && method == :destroy
         DestroyedAt.destroy_target_of_association(target, owner)
       else
         super
