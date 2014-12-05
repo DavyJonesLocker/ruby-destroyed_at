@@ -54,6 +54,12 @@ describe 'destroying an activerecord instance' do
     Comment.count.must_equal 0
   end
 
+  it 'does not delete the owner when it has a restricting dependent' do
+    HeaderImage.create(post: post)
+    post.destroy
+    post.errors.messages[:base].must_include "Cannot delete record because a dependent header image exists"
+  end
+
   it 'destroys dependent through relation with DestroyedAt' do
     commenter = Commenter.create
     Comment.create(:post => post, :commenter => commenter)

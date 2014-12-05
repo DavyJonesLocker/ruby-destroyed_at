@@ -6,6 +6,8 @@ require 'byebug'
 require 'timecop'
 require 'database_cleaner'
 
+I18n.enforce_available_locales = false
+
 class MiniTest::Spec
   class << self
     alias :context :describe
@@ -33,6 +35,7 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE categories (id INTEGER PRIM
 ActiveRecord::Base.connection.execute(%{CREATE TABLE categorizations (id INTEGER PRIMARY KEY, category_id INTEGER, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE comments (id INTEGER PRIMARY KEY, commenter_id INTEGER, post_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE commenters (id INTEGER PRIMARY KEY, destroyed_at DATETIME);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE header_images (id INTEGER PRIMARY KEY, destroyed_at DATETIME, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE images (id INTEGER PRIMARY KEY, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE posts (id INTEGER PRIMARY KEY, author_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE people (id INTEGER PRIMARY KEY);})
@@ -78,6 +81,11 @@ class Commenter < ActiveRecord::Base
   has_many :posts, through: :comments
 end
 
+class HeaderImage < ActiveRecord::Base
+  include DestroyedAt
+  belongs_to :post
+end
+
 class Post < ActiveRecord::Base
   include DestroyedAt
 
@@ -86,6 +94,7 @@ class Post < ActiveRecord::Base
   has_many :categorizations, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :commenters, through: :comments
+  has_one :header_image, dependent: :restrict_with_error, inverse_of: :post
 
   before_destroy :increment_destroy_callback_counter
   before_restore :increment_restore_callback_counter
