@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["michael.dupuis@dockyard.com"]
   spec.description   = %q{Safe destroy for ActiveRecord.}
   spec.summary       = %q{Safe destroy for ActiveRecord.}
-  spec.homepage      = "https://github.com/dockyard/destroyed_at"
+  spec.homepage      = "https://github.com/dockyard/ruby-destroyed_at"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
