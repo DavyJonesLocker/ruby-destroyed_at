@@ -79,7 +79,7 @@ describe 'destroying an activerecord instance' do
     author.destroy!
 
     Author.count.must_equal 0
-    Avatar.count.must_equal 1
+    Avatar.count.must_equal 0
   end
 end
 

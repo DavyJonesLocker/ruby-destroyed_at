@@ -1,3 +1,8 @@
+## 1.0.1
+* Fixes an issue with where the incorrect arguments were being passed
+  from inside the `BelongsToAssociation` and `HasOneAssociation`, as
+reported by [anarchocurious](https://github.com/anarchocurious)
+
 ## 1.0.0
 
 * Requires equal to or greater than Ruby `2.0` -
