@@ -1,7 +1,7 @@
 module DestroyedAt
   module BelongsToAssociation
     def handle_dependency
-      if load_target && method == :destroy
+      if load_target && options[:dependent] == :destroy
         DestroyedAt.destroy_target_of_association(owner, target)
       else
         super
