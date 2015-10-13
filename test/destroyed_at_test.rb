@@ -196,13 +196,13 @@ describe 'non destroyed-at models' do
 end
 
 describe 'destroying a child that destroys its parent on destroy' do
-  it 'does not destroy a parent record without DestroyedAt' do
+  it 'destroys the parent record' do
     parent = Person.create!
     child = DestructiveChild.create!(person: parent)
 
     child.destroy
 
-    assert_equal(1, Person.count, 'Person must be one')
+    assert_equal(0, Person.count, 'Person must be one')
     assert_equal(0, DestructiveChild.count, 'DestructiveChild must be zero')
   end
 end
