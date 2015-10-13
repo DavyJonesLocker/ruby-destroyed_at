@@ -1,3 +1,9 @@
+## 2.0.0
+* Associated models that do not include `DestroyedAt` will now be
+  **deleted** via `dependent: :destroy`. Previously, this was only the
+behavior for child records; however, child records can now delete the
+parent record (in accordance with default ActiveRecord behavior).
+
 ## 1.0.2
 * Fixes an issue in which
   `DestroyedAt::BelongsToAssociation#handle_dependency` was not deriving
@@ -6,7 +12,7 @@ an error for the wrong number of arguments. Thanks to
 [harmdewit](https://github.com/harmdewit) for catching this!
 
 ## 1.0.1
-* Fixes an issue with where the incorrect arguments were being passed
+* Fixes an issue where the incorrect arguments were being passed
   from inside the `BelongsToAssociation` and `HasOneAssociation`, as
 reported by [anarchocurious](https://github.com/anarchocurious)
 

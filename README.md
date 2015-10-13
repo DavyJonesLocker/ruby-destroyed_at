@@ -71,14 +71,9 @@ user.destroyed_at
 ```
 
 #### Warning: Dependent relations with destroy ####
-Be careful when destroying parent relationships that have `dependent:
-:destroy`. If the child
-relationship does not also `include DestroyedAt`, then when you call
-`#destroy` on the parent instance, you will delete the child record,
-rather than simply marking it `destroyed_at`.
-
-The same goes for destroying through relations that omit `include
-DestroyedAt`, even if the parent and child models include the mixin.
+Be careful when destroying models that have `dependent:
+:destroy`. This will **delete**, not destroy, the associated model if
+said model does not `include DestroyedAt`. 
 
 ### Restoring ####
 When you'd like to "restore" a record, call the `#restore` method on
