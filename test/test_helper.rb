@@ -33,6 +33,7 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE categories (id INTEGER PRIM
 ActiveRecord::Base.connection.execute(%{CREATE TABLE categorizations (id INTEGER PRIMARY KEY, category_id INTEGER, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE comments (id INTEGER PRIMARY KEY, commenter_id INTEGER, post_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE commenters (id INTEGER PRIMARY KEY, destroyed_at DATETIME);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE destructive_children (id INTEGER PRIMARY KEY, person_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE images (id INTEGER PRIMARY KEY, post_id INTEGER);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE posts (id INTEGER PRIMARY KEY, author_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE people (id INTEGER PRIMARY KEY);})
@@ -44,6 +45,7 @@ class Author < ActiveRecord::Base
 end
 
 class Person < ActiveRecord::Base
+  has_many :destructive_children
   has_one :pet, dependent: :destroy
 end
 
@@ -76,6 +78,10 @@ class Commenter < ActiveRecord::Base
   include DestroyedAt
   has_many :comments, dependent: :destroy
   has_many :posts, through: :comments
+end
+
+class DestructiveChild < ActiveRecord::Base
+  belongs_to :person, dependent: :destroy
 end
 
 class Post < ActiveRecord::Base

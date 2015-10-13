@@ -1,3 +1,10 @@
+## 1.0.2
+* Fixes an issue in which
+  `DestroyedAt::BelongsToAssociation#handle_dependency` was not deriving
+the action from the `options` hash, but was using `method` and raising
+an error for the wrong number of arguments. Thanks to
+[harmdewit](https://github.com/harmdewit) for catching this!
+
 ## 1.0.1
 * Fixes an issue with where the incorrect arguments were being passed
   from inside the `BelongsToAssociation` and `HasOneAssociation`, as
