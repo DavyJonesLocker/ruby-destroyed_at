@@ -1,8 +1,8 @@
 # DestroyedAt #
 
-[![Build Status](https://secure.travis-ci.org/dockyard/destroyed_at.png?branch=master)](http://travis-ci.org/dockyard/destroyed_at)
-[![Dependency Status](https://gemnasium.com/dockyard/destroyed_at.png?travis)](https://gemnasium.com/dockyard/destroyed_at)
-[![Code Climate](https://codeclimate.com/github/dockyard/destroyed_at.png)](https://codeclimate.com/github/dockyard/destroyed_at)
+[![Build Status](https://secure.travis-ci.org/dockyard/ruby-destroyed_at.png?branch=master)](http://travis-ci.org/dockyard/ruby-destroyed_at)
+[![Dependency Status](https://gemnasium.com/dockyard/ruby-destroyed_at.png?travis)](https://gemnasium.com/dockyard/ruby-destroyed_at)
+[![Code Climate](https://codeclimate.com/github/dockyard/ruby-destroyed_at/badges/gpa.svg)](https://codeclimate.com/github/dockyard/ruby-destroyed_at)
 
 ## Looking for help? ##
 
