@@ -38,6 +38,7 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE images (id INTEGER PRIMARY 
 ActiveRecord::Base.connection.execute(%{CREATE TABLE posts (id INTEGER PRIMARY KEY, author_id INTEGER, destroyed_at DATETIME);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE people (id INTEGER PRIMARY KEY);})
 ActiveRecord::Base.connection.execute(%{CREATE TABLE pets (id INTEGER PRIMARY KEY, person_id INTEGER);})
+ActiveRecord::Base.connection.execute(%{CREATE TABLE likes (id INTEGER PRIMARY KEY, likeable_id INTEGER, likeable_type TEXT, destroyed_at DATETIME);})
 
 class Author < ActiveRecord::Base
   has_many :posts
@@ -68,10 +69,17 @@ class Categorization < ActiveRecord::Base
   belongs_to :post
 end
 
+class Like < ActiveRecord::Base
+  include DestroyedAt
+  belongs_to :likeable, polymorphic: true
+end
+
 class Comment < ActiveRecord::Base
   include DestroyedAt
   belongs_to :post
   belongs_to :commenter
+
+  has_many :likes, as: :likeable, dependent: :destroy
 end
 
 class Commenter < ActiveRecord::Base
@@ -92,6 +100,7 @@ class Post < ActiveRecord::Base
   has_many :categorizations, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :commenters, through: :comments
+  has_one :like, as: :likeable, dependent: :destroy
 
   before_destroy :increment_destroy_callback_counter
   before_restore :increment_restore_callback_counter
