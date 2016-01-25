@@ -116,6 +116,8 @@ describe 'restoring an activerecord instance' do
     Comment.count.must_equal 1
   end
 
+  it 'restores a'
+
   it 'does not restore a non-dependent relation with DestroyedAt' do
     Post.count.must_equal 0
     Author.count.must_equal 0
@@ -184,7 +186,7 @@ describe 'creating a destroyed record' do
 end
 
 describe 'non destroyed-at models' do
-  it 'can destroy has_on dependants' do
+  it 'can destroy has_one dependants' do
     person = Person.create!
     person.create_pet!
 
