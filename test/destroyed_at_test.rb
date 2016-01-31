@@ -81,6 +81,21 @@ describe 'destroying an activerecord instance' do
     Author.count.must_equal 0
     Avatar.count.must_equal 0
   end
+
+  it 'destroys child with the correct datetime through an an autosaving association' do
+    datetime = 10.minutes.ago
+
+    commenter = Commenter.create
+
+    comment = commenter.comments.build
+    commenter.save
+
+    comment.mark_for_destruction(datetime)
+    commenter.save
+
+    comment.destroyed_at.must_equal datetime
+  end
+
 end
 
 describe 'restoring an activerecord instance' do
