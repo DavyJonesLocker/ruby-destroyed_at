@@ -110,7 +110,7 @@ describe 'restoring an activerecord instance' do
 
   it 'restores polymorphic has_many relation with DestroyedAt' do
     comment = Comment.create
-    like = Like.create(likeable: comment)
+    Like.create(likeable: comment)
     comment.destroy
 
     Comment.count.must_equal 0
@@ -124,7 +124,7 @@ describe 'restoring an activerecord instance' do
 
   it 'restores polymorphic has_one relation with DestroyedAt' do
     post = Post.create
-    like = Like.create(likeable: post)
+    Like.create(likeable: post)
     post.destroy
 
     Post.count.must_equal 0
