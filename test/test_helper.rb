@@ -76,7 +76,7 @@ end
 
 class Commenter < ActiveRecord::Base
   include DestroyedAt
-  has_many :comments, dependent: :destroy
+  has_many :comments, dependent: :destroy, autosave: true
   has_many :posts, through: :comments
 end
 

@@ -39,13 +39,19 @@ module DestroyedAt
 
   # Set an object's destroyed_at time.
   def destroy(timestamp = nil)
-    timestamp ||= current_time_from_proper_timezone
+    timestamp ||= @marked_for_destruction_at || current_time_from_proper_timezone
     raw_write_attribute(:destroyed_at, timestamp)
     run_callbacks(:destroy) do
       destroy_associations
       self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: timestamp)
       @destroyed = true
     end
+  end
+
+  def mark_for_destruction(timestamp = nil)
+    @marked_for_destruction_at = timestamp
+
+    super()
   end
 
   # Set an object's destroyed_at time to nil.
