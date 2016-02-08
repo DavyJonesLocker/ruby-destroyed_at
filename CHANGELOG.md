@@ -1,3 +1,8 @@
+## 2.1.0
+* Allows `#mark_for_destruction` to be passed a timestamp which will be
+  used for future calls to `destroy`. Thanks
+  [anarchocurious](https://github.com/anarchocurious)!
+
 ## 2.0.0
 * Associated models that do not include `DestroyedAt` will now be
   **deleted** via `dependent: :destroy`. Previously, this was only the
