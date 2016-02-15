@@ -2,6 +2,9 @@
 * Allows `#mark_for_destruction` to be passed a timestamp which will be
   used for future calls to `destroy`. Thanks
   [anarchocurious](https://github.com/anarchocurious)!
+* Fixes polymorphic associations for dependencies that don't have the
+  same `destroyed_at` timestamp. Thanks
+  [nashby](https://github.com/nashby)!
 
 ## 2.0.0
 * Associated models that do not include `DestroyedAt` will now be
