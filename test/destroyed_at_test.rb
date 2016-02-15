@@ -123,6 +123,34 @@ describe 'restoring an activerecord instance' do
     initial_count.must_equal post.validation_count
   end
 
+  it 'restores polymorphic has_many relation with DestroyedAt' do
+    comment = Comment.create
+    Like.create(likeable: comment)
+    comment.destroy
+
+    Comment.count.must_equal 0
+    Like.count.must_equal 0
+
+    comment.reload
+    comment.restore
+    Comment.count.must_equal 1
+    Like.count.must_equal 1
+  end
+
+  it 'restores polymorphic has_one relation with DestroyedAt' do
+    post = Post.create
+    Like.create(likeable: post)
+    post.destroy
+
+    Post.count.must_equal 0
+    Like.count.must_equal 0
+
+    post.reload
+    post.restore
+    Post.count.must_equal 1
+    Like.count.must_equal 1
+  end
+
   it 'restores a dependent has_many relation with DestroyedAt' do
     Comment.create(:destroyed_at => timestamp, :post => post)
     Comment.count.must_equal 0
@@ -199,7 +227,7 @@ describe 'creating a destroyed record' do
 end
 
 describe 'non destroyed-at models' do
-  it 'can destroy has_on dependants' do
+  it 'can destroy has_one dependants' do
     person = Person.create!
     person.create_pet!
 
