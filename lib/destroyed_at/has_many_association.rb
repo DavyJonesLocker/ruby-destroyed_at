@@ -3,7 +3,7 @@ module DestroyedAt
     def delete_records(records, method)
       if method == :destroy
         records.each do |r|
-          if r.respond_to?(:destroyed_at)
+          if r.respond_to?(:destroyed_at) && owner.respond_to?(:destroyed_at)
             r.destroy(owner.destroyed_at)
           else
             r.destroy
