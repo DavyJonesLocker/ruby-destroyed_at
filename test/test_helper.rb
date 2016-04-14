@@ -41,7 +41,7 @@ ActiveRecord::Base.connection.execute(%{CREATE TABLE pets (id INTEGER PRIMARY KE
 ActiveRecord::Base.connection.execute(%{CREATE TABLE likes (id INTEGER PRIMARY KEY, likeable_id INTEGER, likeable_type TEXT, destroyed_at DATETIME);})
 
 class Author < ActiveRecord::Base
-  has_many :posts
+  has_many :posts, dependent: :destroy
   has_one :avatar, dependent: :destroy
 end
 

@@ -236,6 +236,16 @@ describe 'non destroyed-at models' do
     assert_equal(0, Person.count, 'Person must be zero')
     assert_equal(0, Pet.count, 'Pet must be zero')
   end
+
+  it 'can destroy has_many dependants' do
+    author = Author.create!
+    author.posts.create!
+
+    author.destroy
+
+    assert_equal(0, Author.count, 'Author must be zero')
+    assert_equal(0, Post.count, 'Post must be zero')
+  end
 end
 
 describe 'destroying a child that destroys its parent on destroy' do
@@ -249,3 +259,4 @@ describe 'destroying a child that destroys its parent on destroy' do
     assert_equal(0, DestructiveChild.count, 'DestructiveChild must be zero')
   end
 end
+
