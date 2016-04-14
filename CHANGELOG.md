@@ -1,3 +1,8 @@
+## 2.1.1
+* Fixes an error when deleting parent with dependent destroy when child uses 
+destroyed_at. Thanks [minimul](https://github.com/minimul) for [pull
+#68](https://github.com/DockYard/ruby-destroyed_at/pull/68).
+
 ## 2.1.0
 * Allows `#mark_for_destruction` to be passed a timestamp which will be
   used for future calls to `destroy`. Thanks
