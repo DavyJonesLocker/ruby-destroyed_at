@@ -1,9 +1,15 @@
+language: ruby
 rvm:
-- 2.0.0
 - 2.1.0
+- 2.2.0
+- 2.3.0
 
-before_install:
-- gem install bundler -v '= 1.5.1'
+gemfile:
+  - gemfiles/4.1.gemfile
+  - gemfiles/4.2.gemfile
+
+sudo: false
+cache: bundler
 
 notifications:
   hipchat:

@@ -39,12 +39,25 @@ module DestroyedAt
 
   # Set an object's destroyed_at time.
   def destroy(timestamp = nil)
-    timestamp ||= @marked_for_destruction_at || current_time_from_proper_timezone
-    raw_write_attribute(:destroyed_at, timestamp)
-    run_callbacks(:destroy) do
-      destroy_associations
-      self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: timestamp)
-      @destroyed = true
+    transaction do
+      timestamp ||= @marked_for_destruction_at || current_time_from_proper_timezone
+      raw_write_attribute(:destroyed_at, timestamp)
+
+      run_callbacks(:destroy) do
+        destroy_associations
+        self.class.unscoped.where(self.class.primary_key => id).update_all(destroyed_at: timestamp)
+        @destroyed = true
+
+        next unless ActiveRecord::VERSION::STRING >= '4.2'
+        each_counter_cached_associations do |association|
+          foreign_key = association.reflection.foreign_key.to_sym
+          next if destroyed_by_association && destroyed_by_association.foreign_key.to_sym == foreign_key
+          next unless send(association.reflection.name)
+          association.decrement_counters
+        end
+
+        @destroyed
+      end
     end
   end
 

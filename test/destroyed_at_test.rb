@@ -40,6 +40,15 @@ describe 'destroying an activerecord instance' do
     post.update_callback_count.must_equal nil
   end
 
+  it 'decrements the counter cache' do
+    author = Author.create
+    post = author.posts.create
+
+    author.reload.posts_count.must_equal 1
+    post.destroy
+    author.reload.posts_count.must_equal 0
+  end
+
   it 'stays persisted after destruction' do
     post.destroy
     post.persisted?.must_equal true
