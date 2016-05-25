@@ -80,6 +80,14 @@ class Comment < ActiveRecord::Base
   belongs_to :commenter
 
   has_many :likes, as: :likeable, dependent: :destroy
+
+  after_commit :set_after_committed_flag, on: :destroy
+
+  attr_reader :after_committed
+
+  def set_after_committed_flag
+    @after_committed = true
+  end
 end
 
 class Commenter < ActiveRecord::Base

@@ -269,3 +269,11 @@ describe 'destroying a child that destroys its parent on destroy' do
   end
 end
 
+describe 'destroying on object should call after_commit callback' do
+  it 'calls after_commit callback on: :destroy' do
+    comment = Comment.create
+    comment.destroy
+
+    comment.after_committed.must_equal true
+  end
+end
